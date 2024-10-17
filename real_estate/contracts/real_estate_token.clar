@@ -49,3 +49,20 @@
     )
   )
 )
+
+;; Tokenize a property
+(define-public (tokenize-property (property-id uint) (total-tokens uint))
+  (let ((property (unwrap! (map-get? properties property-id) err-not-found)))
+    (if (and (is-eq (get owner property) tx-sender) (not (get tokenized property)))
+      (begin
+        (map-set properties property-id (merge property { tokenized: true }))
+        (map-set property-tokens property-id {
+          total-supply: total-tokens,
+          tokens-remaining: total-tokens
+        })
+        (ok true)
+      )
+      err-unauthorized
+    )
+  )
+)
