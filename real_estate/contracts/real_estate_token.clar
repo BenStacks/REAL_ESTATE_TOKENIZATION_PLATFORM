@@ -66,3 +66,25 @@
     )
   )
 )
+
+;; Buy property tokens
+(define-public (buy-tokens (property-id uint) (token-amount uint))
+  (let (
+    (property (unwrap! (map-get? properties property-id) err-not-found))
+    (tokens (unwrap! (map-get? property-tokens property-id) err-not-found))
+  )
+    (if (and 
+          (get tokenized property)
+          (<= token-amount (get tokens-remaining tokens))
+        )
+      (begin
+        (try! (stx-transfer? (* token-amount (/ (get price property) (get total-supply tokens))) tx-sender (get owner property)))
+        (map-set property-tokens property-id 
+          (merge tokens { tokens-remaining: (- (get tokens-remaining tokens) token-amount) })
+        )
+        (nft-mint? property-token property-id tx-sender)
+      )
+      err-unauthorized
+    )
+  )
+)
