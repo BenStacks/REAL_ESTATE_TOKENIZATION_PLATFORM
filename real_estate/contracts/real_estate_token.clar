@@ -88,3 +88,13 @@
     )
   )
 )
+
+;; Get property details
+(define-read-only (get-property (property-id uint))
+  (map-get? properties property-id)
+)
+
+;; Get token details for a property
+(define-read-only (get-property-tokens (property-id uint))
+  (map-get? property-tokens property-id)
+)
