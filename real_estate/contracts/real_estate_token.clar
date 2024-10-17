@@ -30,3 +30,22 @@
 
 ;; Define non-fungible token
 (define-non-fungible-token property-token uint)
+
+;; Add a new property
+(define-public (add-property (price uint) (location (string-ascii 50)))
+  (let ((property-id (var-get total-properties)))
+    (if (is-eq tx-sender contract-owner)
+      (begin
+        (map-set properties property-id {
+          owner: contract-owner,
+          price: price,
+          location: location,
+          tokenized: false
+        })
+        (var-set total-properties (+ property-id u1))
+        (ok property-id)
+      )
+      err-owner-only
+    )
+  )
+)
